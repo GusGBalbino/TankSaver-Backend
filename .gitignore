@@ -1,1 +1,54 @@
-__pycache__
+# Arquivos e diretórios gerados pelo Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Ambientes virtuais 
+venv/
+env/
+*.env
+
+# Arquivos de log
+*.log
+
+# Arquivos de configuração específicos
+.env
+
+# Diretório de arquivos estáticos
+staticfiles/
+
+# Arquivos de migrações do Django
+*/migrations/
+
+# Arquivos de configuração local
+local_settings.py
+
+# Arquivos de dependências
+Pipfile
+Pipfile.lock
+pyproject.toml
+
+# Arquivos gerados pelo IDE ou editor de código
+.vscode/
+.idea/
+
+# Arquivos de configuração do sistema operacional (exemplo: .DS_Store no macOS)
+.DS_Store
+
+# Arquivos de saída de testes ou cobertura (exemplo: coverage.xml)
+*.coverage
+coverage.xml
+
+# Diretório de cache (se aplicável)
+__cache__/
+
+# Diretório de dados local (se aplicável)
+__data__/
+
+# Diretório de arquivos temporários (se aplicável)
+__temp__/
+
+# Qualquer outro arquivo ou diretório específico do seu projeto que você deseje excluir
