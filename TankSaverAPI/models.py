@@ -87,6 +87,7 @@ class Posto(models.Model):
     email = models.EmailField(max_length=100)
     responsavel = models.ForeignKey(Responsavel, on_delete=models.PROTECT)
     endereco = models.ForeignKey(Endereco, on_delete=models.PROTECT)
+    senha = models.CharField(max_length=255)
     
     class Meta:
         db_table = 'tb_posto'
