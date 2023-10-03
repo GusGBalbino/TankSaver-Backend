@@ -9,6 +9,7 @@ __pycache__/
 # Ambientes virtuais 
 venv/
 newenv/
+env/
 *.env
 
 # Arquivos de log
