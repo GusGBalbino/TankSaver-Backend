@@ -34,8 +34,3 @@ class CompraCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-class TipoCombustivelList(APIView): #Endpoint auxiliar para visualizar os tipos de combustiveis
-    def get(self, request):
-        tipos = models.TipoCombustivel.objects.all()
-        return Response([{'id': tipo.id, 'nome': str(tipo)} for tipo in tipos])

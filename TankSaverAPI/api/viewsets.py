@@ -21,3 +21,7 @@ class CompraViewSet(viewsets.ModelViewSet):
 class VendaViewSet(viewsets.ModelViewSet):
     serializer_class = serializer.VendaSerializer
     queryset = models.Venda.objects.all()
+    
+class TipoCombustivelViewSet(viewsets.ModelViewSet):
+    serializer_class = serializer.TipoCombustivelSerializer
+    queryset = models.TipoCombustivel.objects.all()
