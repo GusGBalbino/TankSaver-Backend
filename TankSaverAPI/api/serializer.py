@@ -25,3 +25,8 @@ class VendaSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Venda
         fields = '__all__'
+        
+class TipoCombustivelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.TipoCombustivel
+        fields = '__all__'
