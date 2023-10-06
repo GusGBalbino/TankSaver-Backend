@@ -19,6 +19,9 @@ def valida_cpf(cpf):
 class TipoCombustivel(models.Model):
     tipo_combustivel = models.CharField(max_length=20, unique=True)
 
+    def __str__(self):
+        return self.tipo_combustivel
+    
     class Meta:
         db_table = 'tb_tipo_combustivel'
 
@@ -29,6 +32,9 @@ class Responsavel(models.Model):
     email = models.EmailField(max_length=100)
     telefone = models.CharField(max_length=20)
     
+    def __str__(self):
+        return self.nome
+    
     class Meta:
         db_table = 'tb_responsavel'
     
@@ -38,6 +44,9 @@ class Endereco(models.Model):
     cep = models.CharField(max_length=8)
     cidade = models.CharField(max_length=100)
     uf = models.CharField(max_length=2)
+    
+    def __str__(self):
+        return self.endereco
     
     class Meta:
         db_table = 'tb_endereco'
@@ -52,6 +61,9 @@ class Posto(models.Model):
     endereco = models.ForeignKey(Endereco, on_delete=models.PROTECT)
     senha = models.CharField(max_length=255)
     
+    def __str__(self):
+        return self.nome_fantasia
+    
     class Meta:
         db_table = 'tb_posto'
 
@@ -60,6 +72,9 @@ class TipoPagamento(models.Model):
     tipo_pagamento = models.CharField(max_length=20, unique=True)
     taxa = models.DecimalField(max_digits=5, decimal_places=2)
     posto = models.ForeignKey(Posto, on_delete=models.PROTECT)
+    
+    def __str__(self):
+        return self.tipo_pagamento
 
     class Meta:
         db_table = 'tb_tipo_pagamento'
