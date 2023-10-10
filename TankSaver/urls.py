@@ -7,6 +7,7 @@ from TankSaverAPI import views
 
 route = routers.DefaultRouter()
 
+route.register(r'', viewsets.LoginViewSet, basename='login')
 route.register(r'posto', viewsets.PostoViewSet, basename='posto')
 route.register(r'funcionario', viewsets.FuncionarioViewSet, basename='funcionario')
 route.register(r'custos', viewsets.CustosViewSet, basename='custos')
@@ -15,8 +16,9 @@ route.register(r'venda', viewsets.VendaViewSet, basename='venda')
 route.register(r'tipoDeCombustivel', viewsets.TipoCombustivelViewSet, basename='tipoDeCombustivel')
 route.register(r'tipoDePagamento', viewsets.TipoDePagamentoViewSet, basename='tipoDePagamento')
 route.register(r'historico', viewsets.HistoricoViewSet, basename='historico')
-route.register(r'', viewsets.LoginViewSet, basename='login')
-
+route.register(r'responsavel', viewsets.ResponsavelViewSet, basename='responsavel')
+route.register(r'endereco', viewsets.EnderecoViewSet, basename='endereco')
+route.register(r'taxas', viewsets.TaxasViewSet, basename='taxas')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
