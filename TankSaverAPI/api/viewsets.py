@@ -4,7 +4,7 @@ from TankSaverAPI import models
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from datetime import date
+from datetime import datetime, date
 from django.db.models import Sum
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -120,16 +120,22 @@ class HistoricoViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     queryset = models.Historico.objects.all()
     serializer_class = serializer.HistoricoSerializer
-
+    
     @action(detail=False, methods=['post'])
     def fecharMes(self, request):
-        mes = request.data.get('mes')
-        ano = request.data.get('ano')
+        mes = request.data.get('mes', None)
+        ano = request.data.get('ano', None)
         posto_id = request.data.get('posto_id')
 
         # Verifique se o posto_id é válido
         if not models.Posto.objects.filter(id=posto_id).exists():
             return Response({'Error': 'Invalid posto_id'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Se mês e ano não forem fornecidos, defina-os como o mês e ano atuais
+        if not mes or not ano:
+            now = datetime.now()
+            mes = now.month
+            ano = now.year
 
         try:
             with transaction.atomic():
@@ -140,7 +146,7 @@ class HistoricoViewSet(viewsets.ModelViewSet):
 
                 # Atualiza ou cria o registro no histórico
                 historico, created = models.Historico.objects.update_or_create(
-                    data_historico=date(ano, mes, 1),
+                    data_historico=date(ano, mes, 1),  # Usando o primeiro dia do mês
                     posto_id=posto_id,
                     defaults={
                         'despesa_mensal': despesa_mensal,
@@ -152,7 +158,7 @@ class HistoricoViewSet(viewsets.ModelViewSet):
             return Response(serializer.HistoricoSerializer(historico).data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+        
     def _calcular_faturamento(self, mes, ano, posto_id):
         vendas = models.Venda.objects.filter(data_venda__year=ano, data_venda__month=mes, posto_id=posto_id)
         return sum(venda.volume_venda * venda.preco_litro for venda in vendas)
@@ -171,7 +177,7 @@ class HistoricoViewSet(viewsets.ModelViewSet):
 
     def _calcular_total_taxas(self, posto_id):
         taxas = models.Taxas.objects.filter(posto_id=posto_id).first()
-        return sum([getattr(taxas, field.name) for field in taxas._meta.fields if field.name != 'id' and field.name != 'posto']) if taxas else 0
+        return sum([getattr(taxas, field.name) for field in taxas._meta.fields if field.name not in ['id', 'posto', 'posto_id']]) if taxas else 0
 
     def _calcular_total_folha(self, posto_id):
         funcionarios = models.Funcionario.objects.filter(posto_id=posto_id)
@@ -179,7 +185,7 @@ class HistoricoViewSet(viewsets.ModelViewSet):
 
     def _calcular_total_custos(self, posto_id):
         custos = models.Custos.objects.filter(posto_id=posto_id).first()
-        return sum([getattr(custos, field.name) for field in custos._meta.fields if field.name != 'id' and field.name != 'posto']) if custos else 0
+        return sum([getattr(custos, field.name) for field in custos._meta.fields if field.name not in ['id', 'posto', 'posto_id']]) if custos else 0
 
 
 class ResponsavelViewSet(viewsets.ModelViewSet):
