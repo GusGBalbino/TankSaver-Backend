@@ -140,7 +140,7 @@ class Funcionario(models.Model):
     posto = models.ForeignKey(Posto, on_delete=models.PROTECT)
     
     def __str__(self):
-        return self.posto, self.nome
+        return self.nome
     
     class Meta:
         db_table = 'tb_funcionario'

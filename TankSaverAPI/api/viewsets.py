@@ -44,7 +44,7 @@ class FuncionarioViewSet(viewsets.ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CustosViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
@@ -60,7 +60,7 @@ class CustosViewSet(viewsets.ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CompraViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
@@ -93,7 +93,7 @@ class VendaViewSet(viewsets.ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class TipoCombustivelViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
@@ -114,7 +114,7 @@ class TipoDePagamentoViewSet(viewsets.ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class HistoricoViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
@@ -153,13 +153,34 @@ class HistoricoViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def _calcular_despesa(self, mes, ano, posto_id):
-        compras = models.Compra.objects.filter(data_compra__year=ano, data_compra__month=mes, posto_id=posto_id)
-        return sum(compra.volume_compra * compra.preco_litro for compra in compras)
-
     def _calcular_faturamento(self, mes, ano, posto_id):
         vendas = models.Venda.objects.filter(data_venda__year=ano, data_venda__month=mes, posto_id=posto_id)
         return sum(venda.volume_venda * venda.preco_litro for venda in vendas)
+    
+    def _calcular_despesa(self, mes, ano, posto_id):
+        despesa_compras = self._calcular_despesa_compras(mes, ano, posto_id)
+        total_taxas = self._calcular_total_taxas(posto_id)
+        total_folha = self._calcular_total_folha(posto_id)
+        total_custos = self._calcular_total_custos(posto_id)
+    
+        return despesa_compras + total_taxas + total_folha + total_custos
+
+    def _calcular_despesa_compras(self, mes, ano, posto_id):
+        compras = models.Compra.objects.filter(data_compra__year=ano, data_compra__month=mes, posto_id=posto_id)
+        return sum(compra.volume_compra * compra.preco_litro for compra in compras)
+
+    def _calcular_total_taxas(self, posto_id):
+        taxas = models.Taxas.objects.filter(posto_id=posto_id).first()
+        return sum([getattr(taxas, field.name) for field in taxas._meta.fields if field.name != 'id' and field.name != 'posto']) if taxas else 0
+
+    def _calcular_total_folha(self, posto_id):
+        funcionarios = models.Funcionario.objects.filter(posto_id=posto_id)
+        return sum(funcionario.total_folha for funcionario in funcionarios)
+
+    def _calcular_total_custos(self, posto_id):
+        custos = models.Custos.objects.filter(posto_id=posto_id).first()
+        return sum([getattr(custos, field.name) for field in custos._meta.fields if field.name != 'id' and field.name != 'posto']) if custos else 0
+
 
 class ResponsavelViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
@@ -175,7 +196,7 @@ class ResponsavelViewSet(viewsets.ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EnderecoViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
@@ -191,7 +212,7 @@ class EnderecoViewSet(viewsets.ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class TaxasViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
@@ -207,4 +228,4 @@ class TaxasViewSet(viewsets.ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
