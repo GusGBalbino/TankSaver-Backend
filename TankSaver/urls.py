@@ -7,18 +7,18 @@ from TankSaverAPI import views
 
 route = routers.DefaultRouter()
 
-route.register(r'Posto', viewsets.PostoViewSet, basename='Posto')
-route.register(r'Funcionario', viewsets.FuncionarioViewSet, basename='Funcionario')
-route.register(r'Custos', viewsets.CustosViewSet, basename='Custos')
-route.register(r'Compra', viewsets.CompraViewSet, basename='Compra')
-route.register(r'Venda', viewsets.VendaViewSet, basename='Venda')
-route.register(r'TipoDeCombustivel', viewsets.TipoCombustivelViewSet, basename='TipoDeCombustivel')
-route.register(r'TipoDePagamento', viewsets.TipoDePagamentoViewSet, basename='TipoDePagamento')
+route.register(r'posto', viewsets.PostoViewSet, basename='posto')
+route.register(r'funcionario', viewsets.FuncionarioViewSet, basename='funcionario')
+route.register(r'custos', viewsets.CustosViewSet, basename='custos')
+route.register(r'compra', viewsets.CompraViewSet, basename='compra')
+route.register(r'venda', viewsets.VendaViewSet, basename='venda')
+route.register(r'tipoDeCombustivel', viewsets.TipoCombustivelViewSet, basename='tipoDeCombustivel')
+route.register(r'tipoDePagamento', viewsets.TipoDePagamentoViewSet, basename='tipoDePagamento')
+route.register(r'historico', viewsets.HistoricoViewSet, basename='historico')
+route.register(r'', viewsets.LoginViewSet, basename='login')
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(route.urls)),
-    path('login/', views.LoginView.as_view(), name="login"),
-    path('create-compra/', views.CompraCreateView.as_view(), name="compra"),
 ]

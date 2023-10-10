@@ -87,7 +87,10 @@ class Taxas(models.Model):
     comissao_bandeira = models.DecimalField(max_digits=15, decimal_places=2)
     impostos_recolhidos = models.DecimalField(max_digits=15, decimal_places=2)
     posto = models.ForeignKey(Posto, on_delete=models.PROTECT)
-
+    
+    def __str__(self):
+        return self.posto
+    
     class Meta:
         db_table = 'tb_taxas'
 
@@ -112,6 +115,7 @@ class Compra(models.Model):
     preco_litro = models.DecimalField(max_digits=6, decimal_places=2)
     data_compra = models.DateField()
     posto = models.ForeignKey(Posto, on_delete=models.PROTECT)
+    
 
     class Meta:
         db_table = 'tb_compra'
@@ -120,7 +124,8 @@ class Compra(models.Model):
 class Venda(models.Model):
     tipo_pagamento = models.ForeignKey(TipoPagamento, on_delete=models.PROTECT)
     tipo_combustivel = models.ForeignKey(TipoCombustivel, on_delete=models.PROTECT)
-    qtd_recebido = models.DecimalField(max_digits=15, decimal_places=2)
+    volume_venda = models.DecimalField(max_digits=15, decimal_places=2)
+    preco_litro = models.DecimalField(max_digits=15, decimal_places=2)
     posto = models.ForeignKey(Posto, on_delete=models.PROTECT)
     data_venda = models.DateField()
 
@@ -133,6 +138,9 @@ class Funcionario(models.Model):
     cargo = models.CharField(max_length=100)
     total_folha = models.DecimalField(max_digits=15, decimal_places=2)
     posto = models.ForeignKey(Posto, on_delete=models.PROTECT)
+    
+    def __str__(self):
+        return self.posto, self.nome
     
     class Meta:
         db_table = 'tb_funcionario'
