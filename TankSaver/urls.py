@@ -1,22 +1,24 @@
-"""
-URL configuration for TankSaver project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
+from TankSaverAPI.api import viewsets
+from TankSaverAPI import views
+
+route = routers.DefaultRouter()
+
+route.register(r'posto', viewsets.PostoViewSet, basename='posto')
+route.register(r'funcionario', viewsets.FuncionarioViewSet, basename='funcionario')
+route.register(r'custos', viewsets.CustosViewSet, basename='custos')
+route.register(r'compra', viewsets.CompraViewSet, basename='compra')
+route.register(r'venda', viewsets.VendaViewSet, basename='venda')
+route.register(r'tipoDeCombustivel', viewsets.TipoCombustivelViewSet, basename='tipoDeCombustivel')
+route.register(r'tipoDePagamento', viewsets.TipoDePagamentoViewSet, basename='tipoDePagamento')
+route.register(r'historico', viewsets.HistoricoViewSet, basename='historico')
+route.register(r'', viewsets.LoginViewSet, basename='login')
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include(route.urls)),
 ]
