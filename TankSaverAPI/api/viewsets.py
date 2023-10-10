@@ -35,10 +35,32 @@ class FuncionarioViewSet(viewsets.ModelViewSet):
     serializer_class = serializer.FuncionarioSerializer
     queryset = models.Funcionario.objects.all()
 
+    def criarFuncionario(self, request):
+        data = request.data
+        data['posto'] = request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+
 class CustosViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     serializer_class = serializer.CustosSerializer
     queryset = models.Custos.objects.all()
+
+    def criarCustos(self, request):
+        data = request.data
+        data['posto'] = request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
 
 class CompraViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
@@ -62,6 +84,17 @@ class VendaViewSet(viewsets.ModelViewSet):
     serializer_class = serializer.VendaSerializer
     queryset = models.Venda.objects.all()
     
+    def criarVenda(self, request):
+        data = request.data
+        data['posto'] = request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+    
 class TipoCombustivelViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     serializer_class = serializer.TipoCombustivelSerializer
@@ -70,9 +103,21 @@ class TipoCombustivelViewSet(viewsets.ModelViewSet):
 class TipoDePagamentoViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     serializer_class = serializer.TipoDePagamentoSerealizer
-    queryset = models.TipoCombustivel.objects.all()
+    queryset = models.TipoPagamento.objects.all()
+
+    def criarTipoPagamento(self, request):
+        data = request.data
+        data['posto'] = request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
     
 class HistoricoViewSet(viewsets.ModelViewSet):
+    # permission_classes = [IsAuthenticated]
     queryset = models.Historico.objects.all()
     serializer_class = serializer.HistoricoSerializer
 
@@ -116,6 +161,50 @@ class HistoricoViewSet(viewsets.ModelViewSet):
         vendas = models.Venda.objects.filter(data_venda__year=ano, data_venda__month=mes, posto_id=posto_id)
         return sum(venda.volume_venda * venda.preco_litro for venda in vendas)
 
+class ResponsavelViewSet(viewsets.ModelViewSet):
+    # permission_classes = [IsAuthenticated]
+    serializer_class = serializer.ResponsavelSerializer
+    queryset = models.Responsavel.objects.all()
 
+    def criarResponsavel(self, request):
+        data = request.data
+        data['posto'] = request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
 
+class EnderecoViewSet(viewsets.ModelViewSet):
+    # permission_classes = [IsAuthenticated]
+    serializer_class = serializer.EnderecoSerializer
+    queryset = models.Endereco.objects.all()
+
+    def criarEndereco(self, request):
+        data = request.data
+        data['posto'] = request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
         
+class TaxasViewSet(viewsets.ModelViewSet):
+    # permission_classes = [IsAuthenticated]
+    serializer_class = serializer.TaxasSerializer
+    queryset = models.Taxas.objects.all()
+
+    def criarTaxas(self, request):
+        data = request.data
+        data['posto'] = request.user.id
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)

@@ -42,3 +42,17 @@ class HistoricoSerializer(serializers.ModelSerializer):
         model = models.Historico
         fields = '__all__'
         
+class ResponsavelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Responsavel
+        fields = '__all__'
+
+class EnderecoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Endereco
+        fields = '__all__'
+
+class TaxasSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Taxas
+        fields = '__all__'
