@@ -4,7 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from TankSaverAPI import models
-from .api.serializer import CompraSerializer
+from .api.serializer import CompraSerializer, PostoSerializer
+from django.http import Http404
 
 class LoginView(APIView):
     def post(self, request):
@@ -21,7 +22,7 @@ class LoginView(APIView):
         return Response({"Erro": "Login inválido"}, status=status.HTTP_401_UNAUTHORIZED)
     
 class CompraCreateView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     
     def post(self, request):
         data = request.data
@@ -33,4 +34,4 @@ class CompraCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)   

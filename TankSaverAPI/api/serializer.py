@@ -30,3 +30,8 @@ class TipoCombustivelSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TipoCombustivel
         fields = '__all__'
+
+class TipoDePagamentoSerealizer(serializers.ModelSerializer):
+    class Meta:
+        model = models.TipoPagamento
+        fields = '__all__'

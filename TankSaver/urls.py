@@ -13,6 +13,7 @@ route.register(r'Custos', viewsets.CustosViewSet, basename='Custos')
 route.register(r'Compra', viewsets.CompraViewSet, basename='Compra')
 route.register(r'Venda', viewsets.VendaViewSet, basename='Venda')
 route.register(r'TipoDeCombustivel', viewsets.TipoCombustivelViewSet, basename='TipoDeCombustivel')
+route.register(r'TipoDePagamento', viewsets.TipoDePagamentoViewSet, basename='TipoDePagamento')
 
 
 urlpatterns = [

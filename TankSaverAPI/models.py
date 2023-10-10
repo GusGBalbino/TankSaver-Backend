@@ -119,9 +119,11 @@ class Compra(models.Model):
 
 class Venda(models.Model):
     tipo_pagamento = models.ForeignKey(TipoPagamento, on_delete=models.PROTECT)
+    tipo_combustivel = models.ForeignKey(TipoCombustivel, on_delete=models.PROTECT)
     qtd_recebido = models.DecimalField(max_digits=15, decimal_places=2)
     posto = models.ForeignKey(Posto, on_delete=models.PROTECT)
-    
+    data_venda = models.DateField()
+
     class Meta:
         db_table = 'tb_venda'
 
