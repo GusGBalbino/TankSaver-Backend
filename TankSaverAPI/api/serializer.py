@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from TankSaverAPI import models
 
+
 class PostoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Posto
@@ -35,3 +36,9 @@ class TipoDePagamentoSerealizer(serializers.ModelSerializer):
     class Meta:
         model = models.TipoPagamento
         fields = '__all__'
+        
+class HistoricoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Historico
+        fields = '__all__'
+        
