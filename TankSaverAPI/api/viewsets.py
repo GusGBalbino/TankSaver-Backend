@@ -11,6 +11,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import transaction
 
 class LoginViewSet(viewsets.ViewSet):
+    
     @action(detail=False, methods=['post'])
     def login(self, request):
         email = request.data.get("email")
@@ -120,33 +121,33 @@ class HistoricoViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     queryset = models.Historico.objects.all()
     serializer_class = serializer.HistoricoSerializer
-    
-    @action(detail=False, methods=['post'])
-    def fecharMes(self, request):
-        mes = request.data.get('mes', None)
-        ano = request.data.get('ano', None)
-        posto_id = request.data.get('posto_id')
 
-        # Verifique se o posto_id é válido
-        if not models.Posto.objects.filter(id=posto_id).exists():
-            return Response({'Error': 'Invalid posto_id'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Se mês e ano não forem fornecidos, defina-os como o mês e ano atuais
+    def _get_date(self, mes=None, ano=None):
         if not mes or not ano:
             now = datetime.now()
             mes = now.month
             ano = now.year
+        return mes, ano
+
+    def _check_posto_id(self, posto_id):
+        return models.Posto.objects.filter(id=posto_id).exists()
+
+    @action(detail=False, methods=['post'])
+    def fecharMes(self, request):
+        mes, ano = self._get_date(request.data.get('mes'), request.data.get('ano'))
+        posto_id = request.data.get('posto_id')
+        
+        if not self._check_posto_id(posto_id):
+            return Response({'Error': 'Invalid posto_id'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             with transaction.atomic():
-                # Calcula os valores para o histórico
                 despesa_mensal = self._calcular_despesa(mes, ano, posto_id)
                 faturamento_mensal = self._calcular_faturamento(mes, ano, posto_id)
                 total_rendimento = faturamento_mensal - despesa_mensal
 
-                # Atualiza ou cria o registro no histórico
                 historico, created = models.Historico.objects.update_or_create(
-                    data_historico=date(ano, mes, 1),  # Usando o primeiro dia do mês
+                    data_historico=date(ano, mes, 1),
                     posto_id=posto_id,
                     defaults={
                         'despesa_mensal': despesa_mensal,
@@ -158,6 +159,52 @@ class HistoricoViewSet(viewsets.ModelViewSet):
             return Response(serializer.HistoricoSerializer(historico).data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'])
+    def lucroMensal(self, request):
+        mes, ano = self._get_date(request.query_params.get('mes'), request.query_params.get('ano'))
+        posto_id = request.query_params.get('posto_id')
+
+        if not self._check_posto_id(posto_id):
+            return Response({'Error': 'Invalid posto_id'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            historico = models.Historico.objects.filter(
+                data_historico__year=ano, 
+                data_historico__month=mes, 
+                posto_id=posto_id
+            ).first()
+            lucro = historico.total_rendimento if historico else 0
+            return Response({"Lucro mensal": lucro}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=False, methods=['get'])
+    def lucroAnual(self, request):
+        ano = request.query_params.get('ano') or datetime.now().year
+        posto_id = request.query_params.get('posto_id')
+
+        if not self._check_posto_id(posto_id):
+            return Response({'Error': 'Invalid posto_id'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            total_rendimento_anual = sum([
+                models.Historico.objects.filter(
+                    data_historico__year=ano, 
+                    data_historico__month=mes, 
+                    posto_id=posto_id
+                ).first().total_rendimento for mes in range(1, 13)
+                if models.Historico.objects.filter(
+                    data_historico__year=ano, 
+                    data_historico__month=mes, 
+                    posto_id=posto_id
+                ).exists()
+            ])
+            return Response({"Lucro anual": total_rendimento_anual}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+#FUNÇÕES AUXILIARES
         
     def _calcular_faturamento(self, mes, ano, posto_id):
         vendas = models.Venda.objects.filter(data_venda__year=ano, data_venda__month=mes, posto_id=posto_id)
