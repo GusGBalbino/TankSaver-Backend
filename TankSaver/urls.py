@@ -4,6 +4,9 @@ from django.urls import path, include
 from rest_framework import routers
 from TankSaverAPI.api import viewsets
 from TankSaverAPI import views
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
 route = routers.DefaultRouter()
 
@@ -20,7 +23,19 @@ route.register(r'responsavel', viewsets.ResponsavelViewSet, basename='responsave
 route.register(r'endereco', viewsets.EnderecoViewSet, basename='endereco')
 route.register(r'taxas', viewsets.TaxasViewSet, basename='taxas')
 
+schema_view = get_schema_view(
+   openapi.Info(
+      title="TankSaver APIs",
+      default_version='v1.0',
+      description="Documentação de todos os endpoints necessários para a criação do Tanksaver.",
+
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(route.urls)),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
