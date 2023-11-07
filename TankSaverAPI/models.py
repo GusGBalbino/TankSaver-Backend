@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from validate_docbr import CPF, CNPJ
+from django.contrib.auth.hashers import make_password
 
 #Funções para inserções inválidas
 
@@ -31,6 +32,11 @@ class Responsavel(models.Model):
     cpf = models.CharField(max_length=11, validators=[valida_cpf])
     email = models.EmailField(max_length=100)
     telefone = models.CharField(max_length=20)
+    senha = models.CharField(max_length=255)
+    
+    def save(self, *args, **kwargs):
+        self.senha = make_password(self.senha)
+        super(Responsavel, self).save(*args, **kwargs)
     
     def __str__(self):
         return self.nome
@@ -39,27 +45,13 @@ class Responsavel(models.Model):
         db_table = 'tb_responsavel'
     
 
-class Endereco(models.Model):
-    endereco = models.CharField(max_length=150)
-    cep = models.CharField(max_length=8)
-    cidade = models.CharField(max_length=100)
-    uf = models.CharField(max_length=2)
-    
-    def __str__(self):
-        return self.endereco
-    
-    class Meta:
-        db_table = 'tb_endereco'
-
-       
 class Posto(models.Model):
     nome_fantasia = models.CharField(max_length=100)
     bandeira = models.CharField(max_length=100)
     cnpj = models.CharField(max_length=14, validators=[valida_cnpj])
     email = models.EmailField(max_length=100)
     responsavel = models.ForeignKey(Responsavel, on_delete=models.PROTECT)
-    endereco = models.ForeignKey(Endereco, on_delete=models.PROTECT)
-    senha = models.CharField(max_length=255)
+    endereco = models.CharField(max_length=150)
     
     def __str__(self):
         return self.nome_fantasia
@@ -87,9 +79,6 @@ class Taxas(models.Model):
     comissao_bandeira = models.DecimalField(max_digits=15, decimal_places=2)
     impostos_recolhidos = models.DecimalField(max_digits=15, decimal_places=2)
     posto = models.ForeignKey(Posto, on_delete=models.PROTECT)
-    
-    def __str__(self):
-        return self.posto
     
     class Meta:
         db_table = 'tb_taxas'
@@ -132,7 +121,6 @@ class Venda(models.Model):
     class Meta:
         db_table = 'tb_venda'
 
-   
 class Funcionario(models.Model):
     nome = models.CharField(max_length=100)
     cargo = models.CharField(max_length=100)

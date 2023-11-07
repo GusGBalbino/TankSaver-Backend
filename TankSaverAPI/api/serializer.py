@@ -47,10 +47,6 @@ class ResponsavelSerializer(serializers.ModelSerializer):
         model = models.Responsavel
         fields = '__all__'
 
-class EnderecoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Endereco
-        fields = '__all__'
 
 class TaxasSerializer(serializers.ModelSerializer):
     class Meta:
