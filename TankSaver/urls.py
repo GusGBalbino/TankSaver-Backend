@@ -20,7 +20,6 @@ route.register(r'tipoDeCombustivel', viewsets.TipoCombustivelViewSet, basename='
 route.register(r'tipoDePagamento', viewsets.TipoDePagamentoViewSet, basename='tipoDePagamento')
 route.register(r'historico', viewsets.HistoricoViewSet, basename='historico')
 route.register(r'responsavel', viewsets.ResponsavelViewSet, basename='responsavel')
-route.register(r'endereco', viewsets.EnderecoViewSet, basename='endereco')
 route.register(r'taxas', viewsets.TaxasViewSet, basename='taxas')
 
 schema_view = get_schema_view(
