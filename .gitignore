@@ -10,7 +10,7 @@ __pycache__/
 venv/
 newenv/
 env/
-*.env
+.env
 
 # Arquivos de log
 *.log
