@@ -25,13 +25,13 @@ class TipoCombustivel(models.Model):
     
     class Meta:
         db_table = 'tb_tipo_combustivel'
-
-
-class Responsavel(models.Model):
-    nome = models.CharField(max_length=100)
-    cpf = models.CharField(max_length=11, validators=[valida_cpf])
+        
+class Posto(models.Model):
+    nome_fantasia = models.CharField(max_length=100)
+    bandeira = models.CharField(max_length=100)
+    cnpj = models.CharField(max_length=14, validators=[valida_cnpj])
     email = models.EmailField(max_length=100)
-    telefone = models.CharField(max_length=20)
+    endereco = models.CharField(max_length=150)
     senha = models.CharField(max_length=255)
     
     def save(self, *args, **kwargs):
@@ -39,26 +39,25 @@ class Responsavel(models.Model):
         super(Responsavel, self).save(*args, **kwargs)
     
     def __str__(self):
-        return self.nome
-    
-    class Meta:
-        db_table = 'tb_responsavel'
-    
-
-class Posto(models.Model):
-    nome_fantasia = models.CharField(max_length=100)
-    bandeira = models.CharField(max_length=100)
-    cnpj = models.CharField(max_length=14, validators=[valida_cnpj])
-    email = models.EmailField(max_length=100)
-    responsavel = models.ForeignKey(Responsavel, on_delete=models.PROTECT)
-    endereco = models.CharField(max_length=150)
-    
-    def __str__(self):
         return self.nome_fantasia
     
     class Meta:
         db_table = 'tb_posto'
 
+
+class Responsavel(models.Model):
+    nome = models.CharField(max_length=100)
+    cpf = models.CharField(max_length=11, validators=[valida_cpf])
+    email = models.EmailField(max_length=100)
+    telefone = models.CharField(max_length=20)
+    posto = models.ForeignKey(Posto, on_delete=models.PROTECT)
+    
+    def __str__(self):
+        return self.nome
+    
+    class Meta:
+        db_table = 'tb_responsavel'
+    
 
 class TipoPagamento(models.Model):
     tipo_pagamento = models.CharField(max_length=20, unique=True)
