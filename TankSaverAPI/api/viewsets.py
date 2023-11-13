@@ -1,9 +1,11 @@
 from rest_framework import viewsets, status
 from TankSaverAPI.api import serializer
 from TankSaverAPI import models
+from TankSaverAPI.models import Posto
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 from datetime import datetime, date
 from django.db.models import Sum
 from rest_framework.decorators import action
@@ -18,10 +20,12 @@ class LoginViewSet(viewsets.ViewSet):
         email = request.data.get("email")
         senha = request.data.get("senha")
 
-        responsavel = models.Responsavel.objects.filter(email=email).first()
+        posto = Posto.objects.filter(email=email).first()
 
-        if responsavel and check_password(senha, responsavel.senha): #Comparando a senha criptografada
-            refresh = RefreshToken.for_user(responsavel)
+        if posto and check_password(senha, posto.senha): #Comparando a senha criptografada
+            refresh = RefreshToken.for_user(posto)
+            print(Posto.id)
+            refresh['posto_id'] = posto.id
             access_token = str(refresh.access_token)
             return Response({"access_token": access_token}, status=status.HTTP_200_OK)
 

@@ -36,7 +36,7 @@ class Posto(models.Model):
     
     def save(self, *args, **kwargs):
         self.senha = make_password(self.senha)
-        super(Responsavel, self).save(*args, **kwargs)
+        super(Posto, self).save(*args, **kwargs)
     
     def __str__(self):
         return self.nome_fantasia
