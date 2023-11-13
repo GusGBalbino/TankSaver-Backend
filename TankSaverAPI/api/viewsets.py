@@ -24,8 +24,6 @@ class LoginViewSet(viewsets.ViewSet):
 
         if posto and check_password(senha, posto.senha): #Comparando a senha criptografada
             refresh = RefreshToken.for_user(posto)
-            print(Posto.id)
-            refresh['posto_id'] = posto.id
             access_token = str(refresh.access_token)
             return Response({"access_token": access_token}, status=status.HTTP_200_OK)
 
