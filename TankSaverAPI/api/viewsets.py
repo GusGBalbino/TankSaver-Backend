@@ -25,7 +25,14 @@ class LoginViewSet(viewsets.ViewSet):
         if posto and check_password(senha, posto.senha): #Comparando a senha criptografada
             refresh = RefreshToken.for_user(posto)
             access_token = str(refresh.access_token)
-            return Response({"access_token": access_token}, status=status.HTTP_200_OK)
+            postoId = posto.pk
+            postoName = posto.nome_fantasia
+            return Response(
+                {
+                    "access_token": access_token, 
+                    "postoId": postoId, 
+                    "postoName": postoName
+                }, status=status.HTTP_200_OK)
 
         return Response({"Erro": "Login inválido"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -35,7 +42,7 @@ class PostoViewSet(viewsets.ModelViewSet):
     queryset = models.Posto.objects.all()
 
 class FuncionarioViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     serializer_class = serializer.FuncionarioSerializer
     queryset = models.Funcionario.objects.all()
 
