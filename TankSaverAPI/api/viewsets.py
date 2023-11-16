@@ -37,12 +37,12 @@ class LoginViewSet(viewsets.ViewSet):
         return Response({"Erro": "Login inválido"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class PostoViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     serializer_class = serializer.PostoSerializer
     queryset = models.Posto.objects.all()
 
 class FuncionarioViewSet(viewsets.ModelViewSet):
-    #permission_classes = [IsAuthenticated]
+    ##permission_classes = [IsAuthenticated]
     serializer_class = serializer.FuncionarioSerializer
     queryset = models.Funcionario.objects.all()
 
@@ -58,7 +58,7 @@ class FuncionarioViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CustosViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     serializer_class = serializer.CustosSerializer
     queryset = models.Custos.objects.all()
 
@@ -74,7 +74,7 @@ class CustosViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CompraViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     serializer_class = serializer.CompraSerializer
     queryset = models.Compra.objects.all()
 
@@ -91,7 +91,7 @@ class CompraViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class VendaViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     serializer_class = serializer.VendaSerializer
     queryset = models.Venda.objects.all()
     
@@ -107,12 +107,12 @@ class VendaViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class TipoCombustivelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     serializer_class = serializer.TipoCombustivelSerializer
     queryset = models.TipoCombustivel.objects.all()
 
 class TipoDePagamentoViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     serializer_class = serializer.TipoDePagamentoSerealizer
     queryset = models.TipoPagamento.objects.all()
 
@@ -128,7 +128,7 @@ class TipoDePagamentoViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class HistoricoViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    ##permission_classes = [IsAuthenticated]
     queryset = models.Historico.objects.all()
     serializer_class = serializer.HistoricoSerializer
 
@@ -246,7 +246,7 @@ class HistoricoViewSet(viewsets.ModelViewSet):
 
 
 class ResponsavelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     serializer_class = serializer.ResponsavelSerializer
     queryset = models.Responsavel.objects.all()
 
@@ -262,7 +262,7 @@ class ResponsavelViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TaxasViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     serializer_class = serializer.TaxasSerializer
     queryset = models.Taxas.objects.all()
 
