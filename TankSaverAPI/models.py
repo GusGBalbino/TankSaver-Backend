@@ -38,6 +38,7 @@ class Posto(models.Model):
     bandeira = models.CharField(max_length=100)
     cnpj = models.CharField(max_length=14, validators=[valida_cnpj])
     email = models.EmailField(max_length=100)
+    telefone = models.CharField(max_length=50, default='N/A')
     endereco = models.CharField(max_length=150)
     cep = models.CharField(max_length=8, validators=[valida_cep], default='00000000')
     uf = models.CharField(max_length=3, default='N/A')
@@ -71,8 +72,8 @@ class Responsavel(models.Model):
         
 
 class TipoPagamento(models.Model):
-    tipo_pagamento = models.CharField(max_length=20, unique=True)
-    taxa = models.DecimalField(max_digits=5, decimal_places=2)
+    tipo_pagamento = models.CharField(max_length=20, unique=False)
+    taxa = models.DecimalField(max_digits=6, decimal_places=4)
     posto = models.ForeignKey(Posto, on_delete=models.PROTECT)
     
     def __str__(self):
@@ -83,11 +84,11 @@ class TipoPagamento(models.Model):
 
 
 class Taxas(models.Model):
-    ibran = models.DecimalField(max_digits=15, decimal_places=2)
-    ibama = models.DecimalField(max_digits=15, decimal_places=2)
-    agefis = models.DecimalField(max_digits=15, decimal_places=2)
-    comissao_bandeira = models.DecimalField(max_digits=15, decimal_places=2)
-    impostos_recolhidos = models.DecimalField(max_digits=15, decimal_places=2)
+    ibran = models.DecimalField(max_digits=6, decimal_places=4)
+    ibama = models.DecimalField(max_digits=6, decimal_places=4)
+    agefis = models.DecimalField(max_digits=6, decimal_places=4)
+    comissao_bandeira = models.DecimalField(max_digits=6, decimal_places=4)
+    impostos_recolhidos = models.DecimalField(max_digits=6, decimal_places=4)
     posto = models.ForeignKey(Posto, on_delete=models.PROTECT)
     
     class Meta:
