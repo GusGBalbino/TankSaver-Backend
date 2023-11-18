@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status
 from TankSaverAPI.api import serializer
 from TankSaverAPI import models
+from decimal import Decimal
+from django.db import transaction
 from TankSaverAPI.models import Posto
 from rest_framework.response import Response
 from rest_framework import status
@@ -120,15 +122,32 @@ class VendaViewSet(viewsets.ModelViewSet):
     
     def criarVenda(self, request):
         data = request.data
-        data['posto'] = request.user.id
-        serializer = self.get_serializer(data=data)
-        if serializer.is_valid():
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+        tipo_pagamento_id = data.get('tipo_pagamento')
+        volume_venda = Decimal(data.get('volume_venda'))
+        preco_litro = Decimal(data.get('preco_litro'))
+
+        try:
+            tipo_pagamento = models.TipoPagamento.objects.get(id=tipo_pagamento_id)
+            valor_venda_bruto = volume_venda * preco_litro
+            taxa_pagamento = tipo_pagamento.taxa / 100
+
+            # Aplicando a taxa do tipo de pagamento ao valor bruto
+            valor_venda_liquido = valor_venda_bruto - (valor_venda_bruto * taxa_pagamento)
+
+            # Atualizando os dados da venda com o valor líquido
+            data['valor_venda'] = valor_venda_liquido
+
+            # Criando o registro de venda
+            with transaction.atomic():
+                venda_serializer = self.get_serializer(data=data)
+                if venda_serializer.is_valid():
+                    venda_serializer.save()
+                    headers = self.get_success_headers(venda_serializer.data)
+                    return Response(venda_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+                else:
+                    return Response(venda_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except models.TipoPagamento.DoesNotExist:
+            return Response({'error': 'Tipo de pagamento não encontrado'}, status=status.HTTP_400_BAD_REQUEST)
         
     @action(detail=True, methods=['get'])
     def vendasPorPosto(self, request, pk=None):
@@ -182,8 +201,13 @@ class HistoricoViewSet(viewsets.ModelViewSet):
 
         try:
             with transaction.atomic():
-                despesa_mensal = self._calcular_despesa(mes, ano, posto_id)
                 faturamento_mensal = self._calcular_faturamento(mes, ano, posto_id)
+                total_taxas = self._calcular_total_taxas(posto_id, faturamento_mensal)
+                despesa_compras = self._calcular_despesa_compras(mes, ano, posto_id)
+                total_folha = self._calcular_total_folha(posto_id)
+                total_custos = self._calcular_total_custos(posto_id)
+
+                despesa_mensal = despesa_compras + total_folha + total_custos + total_taxas
                 total_rendimento = faturamento_mensal - despesa_mensal
 
                 historico, created = models.Historico.objects.update_or_create(
@@ -255,8 +279,16 @@ class HistoricoViewSet(viewsets.ModelViewSet):
         
     def _calcular_faturamento(self, mes, ano, posto_id):
         vendas = models.Venda.objects.filter(data_venda__year=ano, data_venda__month=mes, posto_id=posto_id)
-        return sum(venda.volume_venda * venda.preco_litro for venda in vendas)
-    
+        
+        faturamento_total = 0
+        for venda in vendas:
+            valor_bruto = venda.volume_venda * venda.preco_litro
+            taxa_pagamento = venda.tipo_pagamento.taxa / 100
+            valor_liquido = valor_bruto - (valor_bruto * taxa_pagamento)
+            faturamento_total += valor_liquido
+
+        return faturamento_total
+
     def _calcular_despesa(self, mes, ano, posto_id):
         despesa_compras = self._calcular_despesa_compras(mes, ano, posto_id)
         total_taxas = self._calcular_total_taxas(posto_id)
@@ -269,9 +301,26 @@ class HistoricoViewSet(viewsets.ModelViewSet):
         compras = models.Compra.objects.filter(data_compra__year=ano, data_compra__month=mes, posto_id=posto_id)
         return sum(compra.volume_compra * compra.preco_litro for compra in compras)
 
-    def _calcular_total_taxas(self, posto_id):
+    def _calcular_total_taxas(self, posto_id, faturamento_mensal):
         taxas = models.Taxas.objects.filter(posto_id=posto_id).first()
-        return sum([getattr(taxas, field.name) for field in taxas._meta.fields if field.name not in ['id', 'posto', 'posto_id']]) if taxas else 0
+        if taxas:
+            # Convertendo os valores de taxas para decimais (por exemplo, de 1 para 0.01)
+            ibran_taxa = taxas.ibran / 100
+            ibama_taxa = taxas.ibama / 100
+            agefis_taxa = taxas.agefis / 100
+            comissao_bandeira_taxa = taxas.comissao_bandeira / 100
+            impostos_recolhidos_taxa = taxas.impostos_recolhidos / 100
+
+            # Calculando cada taxa individualmente e somando
+            total_taxas = (
+                faturamento_mensal * ibran_taxa +
+                faturamento_mensal * ibama_taxa +
+                faturamento_mensal * agefis_taxa +
+                faturamento_mensal * comissao_bandeira_taxa +
+                faturamento_mensal * impostos_recolhidos_taxa
+            )
+            return total_taxas
+        return 0
 
     def _calcular_total_folha(self, posto_id):
         funcionarios = models.Funcionario.objects.filter(posto_id=posto_id)
