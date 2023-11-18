@@ -7,6 +7,14 @@ class PostoSerializer(serializers.ModelSerializer):
         model = models.Posto
         fields = '__all__'
 
+class ResponsavelComPostoSerializer(serializers.ModelSerializer):
+    posto = PostoSerializer()
+
+    class Meta:
+        model = models.Responsavel
+        fields = ['nome', 'cpf', 'email', 'telefone', 'posto']
+
+
 class FuncionarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Funcionario

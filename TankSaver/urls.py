@@ -35,6 +35,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('responsavel/<int:pk>/dadosPerfil/', viewsets.ResponsavelViewSet.as_view({'get': 'dadosPerfil'}), name='responsavel-dados-perfil'),
     path('', include(route.urls)),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]

@@ -260,6 +260,20 @@ class ResponsavelViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=True, methods=['get'])
+    def dadosPerfil(self, request, pk=None):
+        try:
+            posto = models.Posto.objects.get(pk=pk)
+            responsavel = models.Responsavel.objects.filter(posto=posto).first()
+            if responsavel:
+                serializer_instance = serializer.ResponsavelComPostoSerializer(responsavel)
+                return Response(serializer_instance.data, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'Responsável não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        except models.Posto.DoesNotExist:
+            return Response({'message': 'Posto não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
 
 class TaxasViewSet(viewsets.ModelViewSet):
     #permission_classes = [IsAuthenticated]
