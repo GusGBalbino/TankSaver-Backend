@@ -12,6 +12,7 @@ from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import transaction
 from django.contrib.auth.hashers import check_password
+from .serializer import FuncionarioSerializer, CustosSerializer, VendaSerializer, CompraSerializer, TaxasSerializer, HistoricoSerializer
 
 class LoginViewSet(viewsets.ViewSet):
     
@@ -56,6 +57,13 @@ class FuncionarioViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    
+    @action(detail=True, methods=['get'])
+    def funcionariosPorPosto(self, request, pk=None):
+        funcionarios = models.Funcionario.objects.filter(posto_id=pk)
+        serializer = FuncionarioSerializer(funcionarios, many=True)
+        return Response(serializer.data)
 
 class CustosViewSet(viewsets.ModelViewSet):
     #permission_classes = [IsAuthenticated]
@@ -72,6 +80,14 @@ class CustosViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+    @action(detail=True, methods=['get'])
+    def custosPorPosto(self, request, pk=None):
+        custos = models.Custos.objects.filter(posto_id=pk)
+        serializer = CustosSerializer(custos, many=True)
+        return Response(serializer.data)
+    
 
 class CompraViewSet(viewsets.ModelViewSet):
     #permission_classes = [IsAuthenticated]
@@ -89,6 +105,13 @@ class CompraViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    
+    @action(detail=True, methods=['get'])
+    def comprasPorPosto(self, request, pk=None):
+        compras = models.Compra.objects.filter(posto_id=pk)
+        serializer = CompraSerializer(compras, many=True)
+        return Response(serializer.data)
 
 class VendaViewSet(viewsets.ModelViewSet):
     #permission_classes = [IsAuthenticated]
@@ -105,6 +128,13 @@ class VendaViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+    @action(detail=True, methods=['get'])
+    def vendasPorPosto(self, request, pk=None):
+        vendas = models.Venda.objects.filter(posto_id=pk)
+        serializer = VendaSerializer(vendas, many=True)
+        return Response(serializer.data)
     
 class TipoCombustivelViewSet(viewsets.ModelViewSet):
     #permission_classes = [IsAuthenticated]
@@ -213,6 +243,13 @@ class HistoricoViewSet(viewsets.ModelViewSet):
             return Response({"Lucro anual": total_rendimento_anual}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+    @action(detail=True, methods=['get'])
+    def historicoPorPosto(self, request, pk=None):
+        historico = models.Historico.objects.filter(posto_id=pk)
+        serializer = HistoricoSerializer(historico, many=True)
+        return Response(serializer.data)
 
 #FUNÇÕES AUXILIARES
         
@@ -290,3 +327,9 @@ class TaxasViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=True, methods=['get'])
+    def taxasPorPosto(self, request, pk=None):
+        taxas = models.Taxas.objects.filter(posto_id=pk)
+        serializer = TaxasSerializer(taxas, many=True)
+        return Response(serializer.data)
