@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from validate_docbr import CPF, CNPJ
 from django.contrib.auth.hashers import make_password
+import re
 
 #Funções para inserções inválidas
 
@@ -14,6 +15,11 @@ def valida_cpf(cpf):
     cpf_validator = CPF()
     if not cpf_validator.validate(cpf):
         raise ValidationError(f"{cpf} não é um CPF válido.")
+    
+
+def valida_cep(value):
+    if not re.match(r'^\d{8}$', value):
+        raise ValidationError('CEP inválido. Deve conter 8 dígitos.')
 
 #Tabelas do DB ===========================================================
 
@@ -26,12 +32,16 @@ class TipoCombustivel(models.Model):
     class Meta:
         db_table = 'tb_tipo_combustivel'
         
+
 class Posto(models.Model):
     nome_fantasia = models.CharField(max_length=100)
     bandeira = models.CharField(max_length=100)
     cnpj = models.CharField(max_length=14, validators=[valida_cnpj])
     email = models.EmailField(max_length=100)
     endereco = models.CharField(max_length=150)
+    cep = models.CharField(max_length=8, validators=[valida_cep], default='00000000')
+    uf = models.CharField(max_length=3, default='N/A')
+    cidade = models.CharField(max_length=150, default='N/A')
     senha = models.CharField(max_length=255)
     
     def save(self, *args, **kwargs):
@@ -43,7 +53,7 @@ class Posto(models.Model):
     
     class Meta:
         db_table = 'tb_posto'
-
+        
 
 class Responsavel(models.Model):
     nome = models.CharField(max_length=100)
@@ -57,7 +67,8 @@ class Responsavel(models.Model):
     
     class Meta:
         db_table = 'tb_responsavel'
-    
+        
+        
 
 class TipoPagamento(models.Model):
     tipo_pagamento = models.CharField(max_length=20, unique=True)
