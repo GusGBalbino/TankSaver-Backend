@@ -14,8 +14,7 @@ from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import transaction
 from django.contrib.auth.hashers import check_password
-from .serializer import FuncionarioSerializer, CustosSerializer, VendaSerializer, CompraSerializer, TaxasSerializer, HistoricoSerializer
-
+from .serializer import FuncionarioSerializer, CustosSerializer, VendaSerializer, CompraSerializer, TaxasSerializer, HistoricoSerializer, TipoDePagamentoSerializer
 class LoginViewSet(viewsets.ViewSet):
     
     @action(detail=False, methods=['post'])
@@ -175,6 +174,12 @@ class TipoDePagamentoViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=True, methods=['get'])
+    def pagamentoPorPosto(self, request, pk=None):
+        pagamento = models.TipoPagamento.objects.filter(posto_id=pk)
+        serializer = TipoDePagamentoSerializer(pagamento, many=True)
+        return Response(serializer.data)
     
 class HistoricoViewSet(viewsets.ModelViewSet):
     ##permission_classes = [IsAuthenticated]

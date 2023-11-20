@@ -42,6 +42,7 @@ urlpatterns = [
     path('vendas/<int:pk>/vendasPorPosto/', viewsets.VendaViewSet.as_view({'get': 'vendasPorPosto'}), name='vendas-por-posto'),
     path('taxas/<int:pk>/taxasPorPosto/', viewsets.TaxasViewSet.as_view({'get': 'taxasPorPosto'}), name='taxas-por-posto'),
     path('historico/<int:pk>/historicoPorPosto/', viewsets.HistoricoViewSet.as_view({'get': 'historicoPorPosto'}), name='historico-por-posto'),
+    path('tipoDePagamento/<int:pk>/pagamentoPorPosto/', viewsets.TipoDePagamentoViewSet.as_view({'get': 'pagamentoPorPosto'}), name='pagamento-por-posto'),
     path('', include(route.urls)),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
