@@ -162,7 +162,7 @@ class TipoCombustivelViewSet(viewsets.ModelViewSet):
 
 class TipoDePagamentoViewSet(viewsets.ModelViewSet):
     #permission_classes = [IsAuthenticated]
-    serializer_class = serializer.TipoDePagamentoSerealizer
+    serializer_class = serializer.TipoDePagamentoSerializer
     queryset = models.TipoPagamento.objects.all()
 
     def criarTipoPagamento(self, request):

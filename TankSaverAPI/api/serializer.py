@@ -24,23 +24,13 @@ class CustosSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Custos
         fields = '__all__'
-
-class CompraSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Compra
-        fields = '__all__'
-
-class VendaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Venda
-        fields = '__all__'
         
 class TipoCombustivelSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TipoCombustivel
         fields = '__all__'
 
-class TipoDePagamentoSerealizer(serializers.ModelSerializer):
+class TipoDePagamentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TipoPagamento
         fields = '__all__'
@@ -55,6 +45,22 @@ class ResponsavelSerializer(serializers.ModelSerializer):
         model = models.Responsavel
         fields = '__all__'
 
+class VendaSerializer(serializers.ModelSerializer):
+
+    #tipo_pagamento = TipoDePagamentoSerializer(read_only=True)
+    #tipo_combustivel = TipoCombustivelSerializer(read_only=True)
+    
+    class Meta:
+        model = models.Venda
+        fields = '__all__'
+        
+class CompraSerializer(serializers.ModelSerializer):
+    
+    #tipo_combustivel = TipoCombustivelSerializer(read_only=True)
+    
+    class Meta:
+        model = models.Compra
+        fields = '__all__'
 
 class TaxasSerializer(serializers.ModelSerializer):
     class Meta:
