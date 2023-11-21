@@ -14,7 +14,8 @@ from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import transaction
 from django.contrib.auth.hashers import check_password
-from .serializer import FuncionarioSerializer, CustosSerializer, VendaSerializer, CompraSerializer, TaxasSerializer, HistoricoSerializer, TipoDePagamentoSerializer
+from .serializer import FuncionarioSerializer, CustosSerializer, VendaSerializer, CompraSerializer, TaxasSerializer, HistoricoSerializer, TipoDePagamentoSerializer, CompraReadSerializer, VendaReadSerializer
+
 class LoginViewSet(viewsets.ViewSet):
     
     @action(detail=False, methods=['post'])
@@ -94,6 +95,11 @@ class CompraViewSet(viewsets.ModelViewSet):
     #permission_classes = [IsAuthenticated]
     serializer_class = serializer.CompraSerializer
     queryset = models.Compra.objects.all()
+    
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve', 'comprasPorPosto']:
+            return CompraReadSerializer
+        return CompraSerializer
 
     def criarCompra(self, request):
         data = request.data
@@ -111,13 +117,18 @@ class CompraViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def comprasPorPosto(self, request, pk=None):
         compras = models.Compra.objects.filter(posto_id=pk)
-        serializer = CompraSerializer(compras, many=True)
+        serializer = self.get_serializer(compras, many=True)
         return Response(serializer.data)
 
 class VendaViewSet(viewsets.ModelViewSet):
     #permission_classes = [IsAuthenticated]
     serializer_class = serializer.VendaSerializer
     queryset = models.Venda.objects.all()
+    
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve', 'vendasPorPosto']:
+            return VendaReadSerializer
+        return VendaSerializer
     
     def criarVenda(self, request):
         data = request.data
@@ -151,7 +162,7 @@ class VendaViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def vendasPorPosto(self, request, pk=None):
         vendas = models.Venda.objects.filter(posto_id=pk)
-        serializer = VendaSerializer(vendas, many=True)
+        serializer = self.get_serializer(vendas, many=True)
         return Response(serializer.data)
     
 class TipoCombustivelViewSet(viewsets.ModelViewSet):
