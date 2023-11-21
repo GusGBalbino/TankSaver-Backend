@@ -35,6 +35,14 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('responsavel/<int:pk>/dadosPerfil/', viewsets.ResponsavelViewSet.as_view({'get': 'dadosPerfil'}), name='responsavel-dados-perfil'),
+    path('funcionario/<int:pk>/funcionariosPorPosto/', viewsets.FuncionarioViewSet.as_view({'get': 'funcionariosPorPosto'}), name='funcionarios-por-posto'),
+    path('custos/<int:pk>/custosPorPosto/', viewsets.CustosViewSet.as_view({'get': 'custosPorPosto'}), name='custos-por-posto'),
+    path('compras/<int:pk>/comprasPorposto/', viewsets.CompraViewSet.as_view({'get': 'comprasPorPosto'}), name='compras-por-posto'),
+    path('vendas/<int:pk>/vendasPorPosto/', viewsets.VendaViewSet.as_view({'get': 'vendasPorPosto'}), name='vendas-por-posto'),
+    path('taxas/<int:pk>/taxasPorPosto/', viewsets.TaxasViewSet.as_view({'get': 'taxasPorPosto'}), name='taxas-por-posto'),
+    path('historico/<int:pk>/historicoPorPosto/', viewsets.HistoricoViewSet.as_view({'get': 'historicoPorPosto'}), name='historico-por-posto'),
+    path('tipoDePagamento/<int:pk>/pagamentoPorPosto/', viewsets.TipoDePagamentoViewSet.as_view({'get': 'pagamentoPorPosto'}), name='pagamento-por-posto'),
     path('', include(route.urls)),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
